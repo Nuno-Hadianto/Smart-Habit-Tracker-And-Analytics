@@ -40,7 +40,11 @@ app.use((req, res, next) => {
   }
 });
 
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`Smart Habit Tracker server running on port ${PORT}`);
-  console.log(`Open http://localhost:${PORT} in your browser`);
-});
+if (!process.env.VERCEL) {
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Smart Habit Tracker server running on port ${PORT}`);
+    console.log(`Open http://localhost:${PORT} in your browser`);
+  });
+}
+
+export default app;
