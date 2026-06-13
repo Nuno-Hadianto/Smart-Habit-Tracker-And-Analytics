@@ -136,6 +136,14 @@ router.delete('/:id', authenticateToken, async (req, res) => {
       return res.status(404).json({ error: 'Habit not found' });
     }
 
+    // Delete associated daily logs
+    const { error: logsError } = await supabase
+      .from('daily_logs')
+      .delete()
+      .eq('habit_id', req.params.id);
+
+    if (logsError) throw logsError;
+
     const { error } = await supabase
       .from('habits')
       .delete()

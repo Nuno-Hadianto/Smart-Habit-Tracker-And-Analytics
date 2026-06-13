@@ -192,7 +192,7 @@ const Dashboard = {
 
   async loadTodayHabits() {
     const container = document.getElementById('today-habits-list');
-    const today = new Date().toISOString().split('T')[0];
+    const today = API.getLocalDateString();
     
     try {
       const response = await API.getTrackingByDate(today);
@@ -217,7 +217,7 @@ const Dashboard = {
   },
 
   async quickToggle(habitId, completed) {
-    const today = new Date().toISOString().split('T')[0];
+    const today = API.getLocalDateString();
     
     try {
       const response = await API.trackHabit({

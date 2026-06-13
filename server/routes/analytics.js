@@ -16,7 +16,7 @@ router.get('/overview', authenticateToken, async (req, res) => {
       .eq('user_id', userId);
 
     // Get today's logs
-    const today = new Date().toISOString().split('T')[0];
+    const today = req.query.date || new Date().toISOString().split('T')[0];
     const { data: todayLogs } = await supabase
       .from('daily_logs')
       .select('completed')
@@ -47,7 +47,7 @@ router.get('/overview', authenticateToken, async (req, res) => {
 
       let currentStreak = 0;
       if (logs && logs.length > 0) {
-        const todayObj = new Date();
+        const todayObj = new Date(today);
         todayObj.setHours(0, 0, 0, 0);
 
         for (let i = 0; i < logs.length; i++) {
@@ -118,7 +118,7 @@ router.get('/streaks', authenticateToken, async (req, res) => {
 
       let currentStreak = 0;
       if (logs && logs.length > 0) {
-        const today = new Date();
+        const today = new Date(req.query.date || new Date().toISOString().split('T')[0]);
         today.setHours(0, 0, 0, 0);
 
         for (let i = 0; i < logs.length; i++) {
@@ -177,8 +177,9 @@ router.get('/weekly', authenticateToken, async (req, res) => {
     const weeklyData = [];
     const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
+    const todayStr = req.query.date || new Date().toISOString().split('T')[0];
     for (let i = 6; i >= 0; i--) {
-      const date = new Date();
+      const date = new Date(todayStr);
       date.setDate(date.getDate() - i);
       const dateStr = date.toISOString().split('T')[0];
       const dayName = dayNames[date.getDay()];
@@ -219,8 +220,9 @@ router.get('/monthly', authenticateToken, async (req, res) => {
     const totalHabits = habits?.length || 0;
 
     const monthlyData = [];
+    const todayStr = req.query.date || new Date().toISOString().split('T')[0];
     for (let i = 29; i >= 0; i--) {
-      const date = new Date();
+      const date = new Date(todayStr);
       date.setDate(date.getDate() - i);
       const dateStr = date.toISOString().split('T')[0];
 

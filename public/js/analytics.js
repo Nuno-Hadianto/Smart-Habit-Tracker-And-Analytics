@@ -97,7 +97,7 @@ const Analytics = {
       for (let i = 364; i >= 0; i--) {
         const date = new Date(today);
         date.setDate(date.getDate() - i);
-        const dateStr = date.toISOString().split('T')[0];
+        const dateStr = API.getLocalDateString(date);
         const dayOfWeek = date.getDay();
         const weekIndex = Math.floor((364 - i + today.getDay()) / 7);
         

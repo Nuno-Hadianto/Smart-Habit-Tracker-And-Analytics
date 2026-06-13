@@ -5,7 +5,7 @@ import { authenticateToken } from '../middleware/auth.js';
 
 const router = express.Router();
 
-async function calculateStreak(habitId, userId) {
+async function calculateStreak(habitId, userId, todayStr) {
   const supabase = getDb();
   const { data: entries, error } = await supabase
     .from('daily_logs')
@@ -18,7 +18,7 @@ async function calculateStreak(habitId, userId) {
   if (error || !entries || entries.length === 0) return 0;
 
   let streak = 0;
-  const today = new Date();
+  const today = todayStr ? new Date(todayStr) : new Date();
   today.setHours(0, 0, 0, 0);
 
   for (let i = 0; i < entries.length; i++) {
@@ -107,7 +107,7 @@ async function checkAndAwardBadges(userId, streak, habitsCount, totalCompletions
 router.get('/habit/:habitId', authenticateToken, async (req, res) => {
   try {
     const supabase = getDb();
-    const { startDate, endDate } = req.query;
+    const { startDate, endDate, date: todayStr } = req.query;
     
     let query = supabase
       .from('daily_logs')
@@ -125,7 +125,7 @@ router.get('/habit/:habitId', authenticateToken, async (req, res) => {
     const { data: entries, error } = await query;
     if (error) throw error;
 
-    const streak = await calculateStreak(req.params.habitId, req.user.id);
+    const streak = await calculateStreak(req.params.habitId, req.user.id, todayStr);
     res.json({ entries: entries || [], streak });
   } catch (error) {
     console.error('Get tracking entries error:', error);
@@ -290,7 +290,8 @@ router.get('/calendar/:year/:month', authenticateToken, async (req, res) => {
     const supabase = getDb();
     const { year, month } = req.params;
     const startDate = `${year}-${month.padStart(2, '0')}-01`;
-    const endDate = `${year}-${month.padStart(2, '0')}-31`;
+    const lastDay = new Date(parseInt(year), parseInt(month), 0).getDate();
+    const endDate = `${year}-${month.padStart(2, '0')}-${String(lastDay).padStart(2, '0')}`;
 
     const { data: entries, error } = await supabase
       .from('daily_logs')
