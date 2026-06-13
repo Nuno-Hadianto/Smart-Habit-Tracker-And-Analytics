@@ -1,6 +1,6 @@
 import express from 'express';
 import { getDb } from '../database/supabase.js';
-import { authenticateToken } from '../middleware/auth.js';
+import { authenticateToken, generateToken } from '../middleware/auth.js';
 
 const router = express.Router();
 
@@ -38,7 +38,12 @@ router.post('/register', async (req, res) => {
 
     if (profileError) throw profileError;
 
-    const token = authData.session.access_token;
+    const token = generateToken({
+      id: authData.user.id,
+      email: authData.user.email,
+      name: name
+    });
+    
     res.cookie('token', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
@@ -69,7 +74,7 @@ router.post('/login', async (req, res) => {
       return res.status(400).json({ error: 'Email and password are required' });
     }
 
-    const { data, error } = await supabase.auth.admin.signInWithPassword({
+    const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password
     });
@@ -78,7 +83,12 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
-    const token = data.session.access_token;
+    const token = generateToken({
+      id: data.user.id,
+      email: data.user.email,
+      name: data.user.user_metadata?.name || ''
+    });
+
     res.cookie('token', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
@@ -149,6 +159,45 @@ router.put('/profile', authenticateToken, async (req, res) => {
   } catch (error) {
     console.error('Update profile error:', error);
     res.status(500).json({ error: 'Server error' });
+  }
+});
+
+router.put('/password', authenticateToken, async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    const supabase = getDb();
+    const userId = req.user.id;
+
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({ error: 'Both current password and new password are required' });
+    }
+
+    // Verify current password by signing in with the user's email
+    const { data: { user }, error: getUserError } = await supabase.auth.admin.getUserById(userId);
+    if (getUserError || !user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    const { error: signInError } = await supabase.auth.signInWithPassword({
+      email: user.email,
+      password: currentPassword
+    });
+
+    if (signInError) {
+      return res.status(400).json({ error: 'Incorrect current password' });
+    }
+
+    // Update to new password
+    const { error: updateError } = await supabase.auth.admin.updateUserById(userId, {
+      password: newPassword
+    });
+
+    if (updateError) throw updateError;
+
+    res.json({ message: 'Password updated successfully' });
+  } catch (error) {
+    console.error('Change password error:', error);
+    res.status(500).json({ error: error.message || 'Server error' });
   }
 });
 

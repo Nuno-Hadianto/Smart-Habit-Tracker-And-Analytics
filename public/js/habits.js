@@ -126,7 +126,8 @@ const Habits = {
             </div>
           </div>
           <div class="habit-actions">
-            <button class="habit-action-btn delete habit-delete-btn" data-habit-id="${habit.id}" title="Delete">🗑️</button>
+            <button class="habit-action-btn edit habit-edit-btn" data-habit-id="${habit.id}" title="Edit" style="margin-right: 0.5rem; background: none; border: none; cursor: pointer; font-size: 1rem;">✏️</button>
+            <button class="habit-action-btn delete habit-delete-btn" data-habit-id="${habit.id}" title="Delete" style="background: none; border: none; cursor: pointer; font-size: 1rem;">🗑️</button>
           </div>
         </div>
         <div class="habit-stats">
