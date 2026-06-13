@@ -1,5 +1,5 @@
 {
-  "buildCommand": "pnpm install",
+  "buildCommand": "npm install",
   "devCommand": "npm run dev"
 }
 
