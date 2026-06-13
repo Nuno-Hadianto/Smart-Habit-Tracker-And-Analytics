@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Habit Tracker</title>
+  <meta name="description" content="Track your habits, build streaks, and achieve your goals with Smart Habit Tracker">
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div id="app">
+    <div id="auth-section" >
+      <div class="auth-card">
+        <div class="auth-header">
+          <div class="logo">
+            <h1>Smart Habit Tracker</h1>
+          </div>
+          <p class="tagline">Build better habits, track your progress, achieve your goals</p>
+        </div>
+
+        <form id="login-form" class="auth-form">
+          <h2>Welcome Back</h2>
+          <div class="form-group">
+            <label for="login-email">Email</label>
+            <input type="email" id="login-email" name="email">
+          </div>
+          <div class="form-group">
+            <label for="login-password">Password</label>
+            <input type="password" id="login-password" name="password">
+          </div>
+          <button type="submit" class="btn btn-primary btn-full">Sign In</button>
+          <p class="auth-switch">
+            Don't have an account? <a href="#" id="show-register">Create one</a>
+          </p>
+        </form>
+
+        <form id="register-form" class="auth-form hidden">
+          <h2>Create Account</h2>
+          <div class="form-group">
+            <label for="register-name">Full Name</label>
+            <input type="text" id="register-name" name="name">
+          </div>
+          <div class="form-group">
+            <label for="register-email">Email</label>
+            <input type="email" id="register-email" name="email">
+          </div>
+          <div class="form-group">
+            <label for="register-password">Password</label>
+            <input type="password" id="register-password" name="password" required minlength="6">
+          </div>
+          <button type="submit" class="btn btn-primary btn-full">Create Account</button>
+          <p class="auth-switch">
+            Already have an account? <a href="#" id="show-login">Sign in</a>
+          </p>
+        </form>
+
+        <div id="auth-error" class="error-message hidden"></div>
+      </div>
+    </div>
+
+    <div id="main-app" class="main-container hidden">
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <span class="logo-icon">📊</span>
+          <span class="logo-text">Habit Tracker</span>
+        </div>
+        
+        <nav class="sidebar-nav">
+          <a href="#" class="nav-item active" data-page="dashboard">
+            <span class="nav-icon">🏠</span>
+            <span>Dashboard</span>
+          </a>
+          <a href="#" class="nav-item" data-page="habits">
+            <span class="nav-icon">📋</span>
+            <span>My Habits</span>
+          </a>
+          <a href="#" class="nav-item" data-page="tracking">
+            <span class="nav-icon">✅</span>
+            <span>Daily Check-in</span>
+          </a>
+          <a href="#" class="nav-item" data-page="calendar">
+            <span class="nav-icon">📅</span>
+            <span>Calendar</span>
+          </a>
+          <a href="#" class="nav-item" data-page="analytics">
+            <span class="nav-icon">📊</span>
+            <span>Analytics</span>
+          </a>
+          <a href="#" class="nav-item" data-page="badges">
+            <span class="nav-icon">🏆</span>
+            <span>Badges</span>
+          </a>
+        </nav>
+
+        <div class="sidebar-footer">
+          <a href="#" class="nav-item" data-page="profile">
+            <span class="nav-icon">👤</span>
+            <span>Profile</span>
+          </a>
+          <button id="logout-btn" class="nav-item logout-btn">
+            <span class="nav-icon">🚪</span>
+            <span>Logout</span>
+          </button>
+        </div>
+      </aside>
+
+      <header class="mobile-header">
+        <button id="mobile-menu-btn" class="mobile-menu-btn">☰</button>
+        <span class="mobile-logo">📊 Habit Tracker</span>
+        <button id="mobile-profile-btn" class="mobile-profile-btn">👤</button>
+      </header>
+
+      <div id="mobile-nav-overlay" class="mobile-nav-overlay hidden"></div>
+
+      <main class="main-content">
+        <section id="page-dashboard" class="page active">
+          <div class="page-header">
+            <h1>Dashboard</h1>
+            <p class="greeting" id="greeting">Good morning!</p>
+          </div>
+
+          <div class="stats-grid">
+            <div class="stat-card">
+              <span class="stat-icon">📋</span>
+              <div class="stat-info">
+                <span class="stat-value" id="stat-habits">0</span>
+                <span class="stat-label">Active Habits</span>
+              </div>
+            </div>
+            <div class="stat-card">
+              <span class="stat-icon">✅</span>
+              <div class="stat-info">
+                <span class="stat-value" id="stat-today">0</span>
+                <span class="stat-label">Completed Today</span>
+              </div>
+            </div>
+            <div class="stat-card">
+              <span class="stat-icon">🔥</span>
+              <div class="stat-info">
+                <span class="stat-value" id="stat-streak">0</span>
+                <span class="stat-label">Best Streak</span>
+              </div>
+            </div>
+            <div class="stat-card">
+              <span class="stat-icon">📈</span>
+              <div class="stat-info">
+                <span class="stat-value" id="stat-rate">0%</span>
+                <span class="stat-label">Completion Rate</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="dashboard-grid">
+            <div class="card">
+              <div class="card-header">
+                <h2>Weekly Progress</h2>
+              </div>
+              <div class="card-body">
+                <div id="weekly-chart" class="chart-container"></div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-header">
+                <h2>Insights</h2>
+              </div>
+              <div class="card-body">
+                <div id="insights-list" class="insights-list">
+                  <p class="loading">Loading insights...</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="card full-width">
+              <div class="card-header">
+                <h2>Today's Habits</h2>
+                <a href="#" class="link" data-page="tracking">View All →</a>
+              </div>
+              <div class="card-body">
+                <div id="today-habits-list" class="habits-quick-list">
+                  <p class="loading">Loading habits...</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="page-habits" class="page">
+          <div class="page-header">
+            <h1>My Habits</h1>
+            <button id="add-habit-btn" class="btn btn-primary">+ New Habit</button>
+          </div>
+
+          <div class="habits-filter">
+            <button class="filter-btn active" data-category="all">All</button>
+            <button class="filter-btn" data-category="health">💪 Health</button>
+            <button class="filter-btn" data-category="productivity">📈 Productivity</button>
+            <button class="filter-btn" data-category="learning">📚 Learning</button>
+            <button class="filter-btn" data-category="mindfulness">💰 Finance</button>
+          </div>
+
+          <div id="habits-list" class="habits-grid">
+            <p class="loading">Loading habits...</p>
+          </div>
+        </section>
+
+        <section id="page-tracking" class="page">
+          <div class="page-header">
+            <h1>Daily Check-in</h1>
+            <div class="date-nav">
+              <button id="prev-day" class="btn btn-icon">←</button>
+              <span id="current-date" class="current-date"></span>
+              <button id="next-day" class="btn btn-icon">→</button>
+            </div>
+          </div>
+
+          <div id="tracking-list" class="tracking-list">
+            <p class="loading">Loading...</p>
+          </div>
+        </section>
+
+        <section id="page-calendar" class="page">
+          <div class="page-header">
+            <h1>Calendar</h1>
+            <div class="month-nav">
+              <button id="prev-month" class="btn btn-icon">←</button>
+              <span id="current-month"></span>
+              <button id="next-month" class="btn btn-icon">→</button>
+            </div>
+          </div>
+
+          <div id="calendar-view" class="calendar-container">
+            <div class="calendar-grid" id="calendar-grid"></div>
+          </div>
+
+          <div id="day-details" class="day-details hidden">
+            <h3>Habits for <span id="selected-date"></span></h3>
+            <div id="day-habits-list"></div>
+          </div>
+        </section>
+
+        <section id="page-analytics" class="page">
+          <div class="page-header">
+            <h1>Analytics</h1>
+          </div>
+
+          <div class="analytics-grid">
+            <div class="card">
+              <div class="card-header">
+                <h2>30-Day Trend</h2>
+              </div>
+              <div class="card-body">
+                <div id="monthly-chart" class="chart-container"></div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-header">
+                <h2>Habit Performance</h2>
+              </div>
+              <div class="card-body">
+                <div id="performance-chart" class="chart-container"></div>
+              </div>
+            </div>
+
+            <div class="card full-width">
+              <div class="card-header">
+                <h2>Activity Heatmap</h2>
+              </div>
+              <div class="card-body">
+                <div id="heatmap" class="heatmap-container"></div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-header">
+                <h2>Category Breakdown</h2>
+              </div>
+              <div class="card-body">
+                <div id="category-chart" class="chart-container"></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="page-badges" class="page">
+          <div class="page-header">
+            <h1>Badges & Achievements</h1>
+          </div>
+
+          <div class="badges-section">
+            <h2>Earned Badges</h2>
+            <div id="earned-badges" class="badges-grid">
+              <p class="loading">Loading badges...</p>
+            </div>
+          </div>
+
+          <div class="badges-section">
+            <h2>All Badges</h2>
+            <div id="all-badges" class="badges-grid">
+              <p class="loading">Loading badges...</p>
+            </div>
+          </div>
+        </section>
+
+        <section id="page-profile" class="page">
+          <div class="page-header">
+            <h1>Profile</h1>
+          </div>
+
+          <div class="profile-container">
+            <div class="card">
+              <div class="card-header">
+                <h2>Profile Information</h2>
+              </div>
+              <div class="card-body">
+                <form id="profile-form">
+                  <div class="form-group">
+                    <label for="profile-name">Name</label>
+                    <input type="text" id="profile-name" name="name" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="profile-email">Email</label>
+                    <input type="email" id="profile-email" name="email" disabled>
+                  </div>
+                </form>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-header">
+                <h2>Change Password</h2>
+              </div>
+              <div class="card-body">
+                <form id="password-form">
+                  <div class="form-group">
+                    <label for="current-password">Current Password</label>
+                    <input type="password" id="current-password" name="currentPassword" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="new-password">New Password</label>
+                    <input type="password" id="new-password" name="newPassword" required minlength="6">
+                  </div>
+                  <button type="submit" class="btn btn-primary">Update Password</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <div id="habit-modal" class="modal hidden">
+      <div class="modal-overlay"></div>
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 id="habit-modal-title">New Habit</h2>
+          <button class="modal-close" id="close-habit-modal">×</button>
+        </div>
+        <form id="habit-form">
+          <div class="form-group">
+            <label for="habit-name">Habit Name *</label>
+            <input type="text" id="habit-name" name="name">
+          </div>
+          <div class="form-group">
+            <label for="habit-description">Description</label>
+            <textarea id="habit-description" name="description" rows="2"></textarea>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="habit-category">Category *</label>
+              <select id="habit-category" name="category" required>
+                <option value="">Select category</option>
+                <option value="health">💪 Health & Fitness</option>
+                <option value="productivity">📈 Productivity</option>
+                <option value="learning">📚 Learning</option>
+                <option value="finance">💰 Finance</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="habit-frequency">Frequency</label>
+              <select id="habit-frequency" name="frequency">
+                <option value="daily">Daily</option>
+                <option value="weekly">Weekly</option>
+                <option value="weekdays">Weekdays</option>
+                <option value="weekends">Weekends</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="habit-icon">Icon</label>
+              <select id="habit-icon" name="icon">
+                <option value="📌">📌 Default</option>
+                <option value="💪">💪 Exercise</option>
+                <option value="📚">📚 Reading</option>
+                <option value="🧘">🧘 Meditation</option>
+                <option value="💧">💧 Water</option>
+                <option value="🏃">🏃 Running</option>
+                <option value="✍️">✍️ Writing</option>
+                <option value="🎯">🎯 Goal</option>
+                <option value="💤">💤 Sleep</option>
+                <option value="🥗">🥗 Diet</option>
+                <option value="💊">💊 Medicine</option>
+                <option value="🎵">🎵 Music</option>
+                <option value="🎨">🎨 Art</option>
+                <option value="💻">💻 Coding</option>
+                <option value="🌱">🌱 Growth</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="habit-color">Color</label>
+              <input type="color" id="habit-color" name="color" value="#6366f1">
+            </div>
+          </div>
+          <input type="hidden" id="habit-id" name="id">
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" id="cancel-habit">Cancel</button>
+            <button type="submit" class="btn btn-primary">Save Habit</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div id="notes-modal" class="modal hidden">
+      <div class="modal-overlay"></div>
+      <div class="modal-content modal-small">
+        <div class="modal-header">
+          <h2>Add Notes</h2>
+          <button class="modal-close" id="close-notes-modal">×</button>
+        </div>
+        <form id="notes-form">
+          <div class="form-group">
+            <label for="tracking-notes">Notes</label>
+            <textarea id="tracking-notes" name="notes" rows="4"></textarea>
+          </div>
+          <input type="hidden" id="notes-habit-id">
+          <input type="hidden" id="notes-date">
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" id="cancel-notes">Cancel</button>
+            <button type="submit" class="btn btn-primary">Save</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div id="toast-container" class="toast-container"></div>
+
+    <div id="badge-notification" class="badge-notification hidden">
+      <div class="badge-notification-content">
+        <span class="badge-notification-icon"></span>
+        <div class="badge-notification-text">
+          <strong>New Badge Earned!</strong>
+          <span class="badge-notification-name"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/auth.js"></script>
+  <script src="/js/habits.js"></script>
+  <script src="/js/tracking.js"></script>
+  <script src="/js/calendar.js"></script>
+  <script src="/js/analytics.js"></script>
+  <script src="/js/badges.js"></script>
+  <script src="/js/profile.js"></script>
+  <script src="/js/app.js"></script>
+</body>
+</html>

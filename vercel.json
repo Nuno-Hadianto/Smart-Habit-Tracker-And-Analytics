@@ -1,0 +1,6 @@
+{
+  "buildCommand": "pnpm install",
+  "devCommand": "npm run dev"
+}
+
+
