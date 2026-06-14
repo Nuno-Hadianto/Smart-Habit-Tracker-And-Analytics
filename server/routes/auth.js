@@ -32,10 +32,10 @@ router.post('/register', async (req, res) => {
       throw authError;
     }
 
-    // Insert into profiles table
+    // Insert/upsert into profiles table (using upsert in case a DB trigger already created the profile)
     const { error: profileError } = await supabase
       .from('profiles')
-      .insert([{ id: authData.user.id }]);
+      .upsert({ id: authData.user.id });
 
     if (profileError) throw profileError;
 
